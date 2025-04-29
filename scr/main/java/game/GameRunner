@@ -1,0 +1,62 @@
+package game;
+
+import java.util.Scanner;
+
+public class GameRunner {
+    private final Scanner scanner = new Scanner(System.in);
+    private NumberGuessingGame game;
+
+    public void run() {
+        System.out.println("Number Guessing Game");
+        System.out.println("---------------------");
+
+        game = new NumberGuessingGame(10, 1, 100);
+        boolean playing = true;
+
+        while (playing) {
+            System.out.print("Enter a number (or 101 to quit): ");
+            int guess;
+
+            try {
+                guess = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Try again.");
+                continue;
+            }
+
+            if (guess == 101) {
+                System.out.println("Bye!");
+                break;
+            }
+
+            if (guess < 1 || guess > 100) {
+                System.out.println("Out of range!");
+                continue;
+            }
+
+            if (game.checkGuess(guess)) {
+                System.out.println("You won! It took " + game.getAttemptsLeft() + " attempts to guess.");
+                playing = askToPlayAgain();
+            } else if (!game.hasAttempts()) {
+                System.out.println("You lost. The number was: " + game.getNumberToWin());
+                playing = askToPlayAgain();
+            } else {
+                System.out.println("Missed! Try a " + game.getHint(guess) + " number.");
+                System.out.println("Attempts left: " + game.getAttemptsLeft());
+                System.out.println();
+            }
+        }
+
+        scanner.close();
+    }
+
+    private boolean askToPlayAgain() {
+        System.out.print("Play again? (yes/no): ");
+        String response = scanner.nextLine();
+        if (response.equalsIgnoreCase("yes")) {
+            game.resetGame();
+            return true;
+        }
+        return false;
+    }
+}
